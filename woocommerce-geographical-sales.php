@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WooCommerce Geographical Sales Report
- * Plugin URI:  https://github.com/charlietennant/wp-woocommerce-geographical-sales-report
+ * Plugin URI:  https://github.com/charlietennant/woocommerce-geographical-sales-report
  * Description: This plugin adds a new report to your WooCommerce site to allow you to analyse sales by country. 
  * Author: Charlie Tennant
  * Version: 1.0
