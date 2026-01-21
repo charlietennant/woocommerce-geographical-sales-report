@@ -1,10 +1,13 @@
 <?php
 /**
- * Plugin Name: WooCommerce Geographical Sales Report
+ * Plugin Name: Geographical Sales Report for WooCommerce
  * Plugin URI:  https://github.com/charlietennant/woocommerce-geographical-sales-report
  * Description: This plugin adds a new report to your WooCommerce site to allow you to analyse sales by country. 
  * Author: Charlie Tennant
  * Version: 1.0
+ * Tested up to: 6.9
+ * Stable tag: 1.0
+ * Requires PHP: 7.4
  * Author URI: https://github.com/charlietennant
  * Requires Plugins: woocommerce
  * 
@@ -40,10 +43,10 @@ function display_geographical_sales_page() {
     echo '<h1 class="wp-heading-inline">Geographical Sales Report</h1>';
 
     // Has the user scoped the report to a specific country?
-    $country = isset($_GET['country']) ? $_GET['country'] : null;
+    $country = isset($_GET['country']) ? sanitize_text_field( wp_unslash( $_GET['country'] )) : null;
 
     if(!empty($country)) {
-        echo '<div><a href="' . remove_query_arg('country') . '">Back to main report</a></div>';
+        echo '<div><a href="' . esc_html(remove_query_arg('country')) . '">Back to main report</a></div>';
 
         // Validate the country is acceptable
         if(!in_array($country, array_keys(WC()->countries->countries))) {
@@ -71,7 +74,7 @@ function display_geographical_sales_page() {
                 echo "<tr>";
 
                 array_walk($grouped, function($value, $key) {
-                    echo "<th>{$key}</th>";
+                    echo "<th>" . esc_html($key) . "</th>";
                 });
 
                 echo "</tr></thead><tbody>";
@@ -82,14 +85,14 @@ function display_geographical_sales_page() {
                 foreach( $grouped as $key => $value )
                 {
                     echo "<td>" . match($key) {
-                        'Month' => date('F', mktime(0, 0, 0, $value)),
+                        'Month' => esc_html(gmdate('F', mktime(0, 0, 0, $value))),
                         'Shipping Country' => match(empty($country)) {
-                            true => '<a href="' . add_query_arg(array("country" => $value)) .'">' . WC()->countries->countries[$value] . '</a>',
-                            false => WC()->countries->countries[$value],
+                            true => '<a href="' . esc_html(add_query_arg(array("country" => $value))) .'">' . esc_html(WC()->countries->countries[$value]) . '</a>',
+                            false => esc_html(WC()->countries->countries[$value]),
                         },
                         'Total Revenue' => wc_price($value),
                         'Order Count' => number_format($value),
-                        default => $value,
+                        default => esc_html($value),
                     } . "</td>";
                 }
 
@@ -163,7 +166,7 @@ function get_scoped_geo_report ( $country ) {
         WHERE
             p.post_type = 'shop_order'
             AND p.post_status IN ('wc-processing', 'wc-completed')
-            AND pm_country.meta_value = '{$country}'
+            AND pm_country.meta_value = '" . esc_sql($country) . "'
         GROUP BY
             YEAR(p.post_date_gmt),
             MONTH(p.post_date_gmt),

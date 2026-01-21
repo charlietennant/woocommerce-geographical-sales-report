@@ -1,0 +1,5 @@
+<rule ref="WordPress.Security.EscapeOutput">
+    <properties>
+        <property name="customAutoEscapedFunctions" type="array" value="wc_price,"/>
+    </properties>
+</rule>
